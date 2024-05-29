@@ -1,0 +1,65 @@
+CREATE DATABASE dados;
+USE dados;
+
+CREATE TABLE usuario(
+id INT NOT NULL AUTO_INCREMENT,
+nome VARCHAR(100),
+email VARCHAR(100) UNIQUE,
+senha VARCHAR(100),
+cpf BIGINT UNIQUE,
+dtNascimento DATE,
+estado CHAR(2),
+cidade VARCHAR(100),
+bairro VARCHAR(100),
+rua VARCHAR(100),
+numero int,
+PRIMARY KEY(id)
+);
+
+CREATE TABLE lancamento(
+id INT NOT NULL  AUTO_INCREMENT,
+lancamentoTipo ENUM("Pagamento", "Recebimento"),
+descricao VARCHAR(100),
+valor DECIMAL(10,2),
+dataVencimento DATE,
+PRIMARY KEY(id)
+);
+
+CREATE TABLE contaBancaria(
+id INT NOT NULL AUTO_INCREMENT,
+nome VARCHAR(100),
+agencia BIGINT,
+conta BIGINT,
+PRIMARY KEY(id)
+);
+
+CREATE TABLE receita(
+id INT NOT NULL AUTO_INCREMENT,
+nome VARCHAR(100),
+cpf BIGINT UNIQUE,
+email VARCHAR(100),
+PRIMARY KEY(id)
+);
+
+CREATE TABLE centroCusto(
+id INT NOT NULL AUTO_INCREMENT,
+nome VARCHAR(100),
+cpf BIGINT UNIQUE,
+email VARCHAR(100),
+PRIMARY KEY(id)
+);
+
+ALTER TABLE lancamento
+ADD COLUMN receitaId INT,
+ADD FOREIGN KEY (receitaId)
+REFERENCES receita (id);
+
+ALTER TABLE lancamento
+ADD COLUMN centroCustoId INT,
+ADD FOREIGN KEY (centroCustoId)
+REFERENCES centroCusto (id);
+
+ALTER TABLE lancamento
+ADD COLUMN contaBancariaId INT,
+ADD FOREIGN KEY (contaBancariaId)
+REFERENCES contaBancaria (id);

@@ -1,28 +1,43 @@
-import cors from 'cors';
 import express from 'express';
-import AutenticacaoController from './controllers/AutenticacaoController.js';
-import UsuariosController from './controllers/UsuariosController.js';
+import UsuariosController from './controlles/UsuariosController.js';
+import ContaBancariaController from './controlles/ContaBancariaController.js';
+import ReceitaController from './controlles/ReceitaController.js';
+import CentroCustoController from './controlles/CentroCustoController.js';
+
 
 const port = 3000;
 
 const app = express();
 app.use(express.json());
-app.use(
-  cors({
-    origin: '*',
-  })
-);
 
-// autenticação
-const autenticacaoController = new AutenticacaoController();
-app.post('/logar', autenticacaoController.logar);
+const usuariosController = new UsuariosController;
 
-// CRUD Usuários
-const usuariosController = new UsuariosController();
-app.get('/usuarios', usuariosController.listar);
-app.post('/usuarios', usuariosController.adicionar);
-app.put('/usuarios', usuariosController.atualizar);
-app.delete('/usuarios/:idUsuario', usuariosController.excluir);
+app.get('/usuario', usuariosController.listar);
+app.get('/usuario/:id', usuariosController.pesquisar);
+app.post('/usuario', usuariosController.adicionar);
+app.put('/usuario', usuariosController.atualizar);
+app.delete('/usuario/:id', usuariosController.excluir);
+
+const contaBancariaController = new ContaBancariaController;
+
+app.get('/contaBancaria', contaBancariaController.listar);
+app.get('/contaBancaria/:idConta', contaBancariaController.pesquisar);
+app.post('/contaBancaria', contaBancariaController.adicionar);
+app.put('/contaBancaria', contaBancariaController.atualizar);
+
+const receitaControllerController = new ReceitaController;
+
+app.get('/receita', receitaControllerController.listar);
+app.get('/receita/:idReceita', receitaControllerController.pesquisar);
+app.post('/receita', receitaControllerController.adicionar);
+app.put('/receita', receitaControllerController.atualizar);
+
+const centroCustoController = new CentroCustoController;
+
+app.get('/centroCusto', centroCustoController.listar);
+app.get('/centroCusto/:idCentroCusto', centroCustoController.pesquisar);
+app.post('/centroCusto', centroCustoController.adicionar);
+app.put('/centroCusto', centroCustoController.atualizar);
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);

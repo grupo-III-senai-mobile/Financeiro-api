@@ -4,9 +4,9 @@ const dbConfig = {
   host: 'localhost',
   port: '3306',
   user: 'root',
-  password: 'senai',
-  database: 'projetoFinanceiro'
-}
+  password: 'matheus',
+  database: 'dados',
+};
 
 class ConexaoMySql {
   async getConexao() {
