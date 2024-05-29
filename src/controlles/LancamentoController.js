@@ -3,16 +3,15 @@ import ConexaoMySql from '../database/ConexaoMySql.js';
 class LancamentosController {
   async listar(req, resp) {
     try {
-      const filtro = req.query.filtro || '';
       const conexao = await new ConexaoMySql().getConexao();
       const sql = `
         SELECT l.*, cc.*, r.*, cb.* 
         FROM lancamento l
-        JOIN centroCentro cc ON l.centroCustoId = cc.id
+        JOIN centroCusto cc ON l.centroCustoId = cc.id
         JOIN receita r ON l.receitaId = r.id
         JOIN contaBancaria cb ON l.contaBancariaId = cb.id
       `;
-      const [resultado] = await conexao.execute(sql, [`%${filtro}%`]);
+      const [resultado] = await conexao.execute(sql);
 
       resp.send(resultado);
     } catch (error) {
@@ -27,7 +26,7 @@ class LancamentosController {
         const sql = `
         SELECT l.*, cc.*, r.*, cb.* 
         FROM lancamento l
-        JOIN centroCentro cc ON l.centroCustoId = cc.id
+        JOIN centroCusto cc ON l.centroCustoId = cc.id
         JOIN receita r ON l.receitaId = r.id
         JOIN contaBancaria cb ON l.contaBancariaId = cb.id
         WHERE id = ?
@@ -35,7 +34,7 @@ class LancamentosController {
         const [resultado] = await conexao.execute(sql, [id]);
 
         if (resultado.length === 0) {
-            resp.status(404).send({ message: 'Conta não encontrada' });
+            resp.status(404).send({ message: 'Lançamento não encontrado' });
             return;
         }
 
@@ -45,45 +44,46 @@ class LancamentosController {
     }
 }
 
-  async adicionar(req, resp) {
-    try {
-      const novoLancamento = req.body;
+async adicionar(req, resp) {
+  try {
+    const novoLancamento = req.body;
 
-      if (!novoLancamento.lancamentoTipo || !novoLancamento.descricao || !novoLancamento.valor || !novoLancamento.data || 
-          !novoLancamento.centro_custo_id || !novoLancamento.receita_id || !novoLancamento.conta_bancaria_id) {
-        resp.status(400).send('Os campos lancamentoTipo, descricao, valor, data, centroCustoId, receitaId e contaBancariaId são obrigatórios.');
-        return;
-      }
-
-      if (novoLancamento.lancamentoTipo != "Pagamento" && novoLancamento.lancamentoTipo != "Recebimento"){
-        resp.status(400).send('O campo lancamentoTipo só aceita (Pagamento ou Recebimento).');
-        return;
-      }
-
-      const conexao = await new ConexaoMySql().getConexao();
-      const sql = 'INSERT INTO lancamento (lancamentoTipo, descricao, valor, dataVencimento, centroCustoId, receitaId, contaBancariaId) VALUES (?,?,?,?,?,?,?)';
-      const [resultado] = await conexao.execute(sql, [
-        novoLancamento.lancamentoTipo,
-        novoLancamento.descricao,
-        novoLancamento.valor,
-        novoLancamento.dataVencimento,
-        novoLancamento.centroCustoId,
-        novoLancamento.receitaId,
-        novoLancamento.contaBancariaId
-      ]);
-
-      resp.send({ resultado });
-    } catch (error) {
-      resp.status(500).send(error);
+    if (!novoLancamento.lancamentoTipo || !novoLancamento.descricao || isNaN(Number(novoLancamento.valor)) || !novoLancamento.dataVencimento || 
+    isNaN(Number(novoLancamento.centroCustoId)) || isNaN(Number(novoLancamento.receitaId)) || isNaN(Number(novoLancamento.contaBancariaId))) {
+      resp.status(400).send('Os campos lancamentoTipo, descricao, valor, data, centroCustoId, receitaId e contaBancariaId são obrigatórios.');
+      return;
     }
+
+    if (novoLancamento.lancamentoTipo !== "Pagamento" && novoLancamento.lancamentoTipo !== "Recebimento"){
+      resp.status(400).send('O campo lancamentoTipo só aceita (Pagamento ou Recebimento).');
+      return;
+    }
+
+    const conexao = await new ConexaoMySql().getConexao();
+    const sql = 'INSERT INTO lancamento (lancamentoTipo, descricao, valor, dataVencimento, receitaId, centroCustoId, contaBancariaId) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    const [resultado] = await conexao.execute(sql, [
+      novoLancamento.lancamentoTipo,
+      novoLancamento.descricao,
+      novoLancamento.valor,
+      novoLancamento.dataVencimento,
+      novoLancamento.receitaId,
+      novoLancamento.centroCustoId,
+      novoLancamento.contaBancariaId
+    ]);
+
+    resp.send({ resultado });
+  } catch (error) {
+    resp.status(500).send(error);
   }
+}
+
 
   async atualizar(req, resp) {
     try {
       const lancamentoEditar = req.body;
 
       if (!lancamentoEditar.id || !lancamentoEditar.descricao || !lancamentoEditar.valor || !lancamentoEditar.data || 
-          !lancamentoEditar.centro_custo_id || !lancamentoEditar.receita_id || !lancamentoEditar.conta_bancaria_id) {
+          !lancamentoEditar.centroCustoId || !lancamentoEditar.receitaId || !lancamentoEditar.contaBancariaId) {
         resp.status(400).send('Todos os campos são obrigatórios para atualizar.');
         return;
       }
@@ -91,12 +91,12 @@ class LancamentosController {
       const conexao = await new ConexaoMySql().getConexao();
       const sql = 'UPDATE lancamento SET descricao = ?, valor = ?, dataVencimento = ?, centroCustoId = ?, receitaId = ?, contaBancariaId = ? WHERE id = ?';
       const [resultado] = await conexao.execute(sql, [
-        novoLancamento.descricao,
-        novoLancamento.valor,
-        novoLancamento.dataVencimento,
-        novoLancamento.centroCustoId,
-        novoLancamento.receitaId,
-        novoLancamento.contaBancariaId,
+        lancamentoEditar.descricao,
+        lancamentoEditar.valor,
+        lancamentoEditar.dataVencimento,
+        lancamentoEditar.centroCustoId,
+        lancamentoEditar.receitaId,
+        lancamentoEditar.contaBancariaId,
         lancamentoEditar.id
       ]);
 
@@ -110,7 +110,7 @@ class LancamentosController {
     try {
       const conexao = await new ConexaoMySql().getConexao();
       const sql = 'DELETE FROM lancamento WHERE id = ?';
-      const [resultado] = await conexao.execute(sql, [+req.params.idLancamento]);
+      const [resultado] = await conexao.execute(sql, [+req.params.id]);
 
       resp.send(resultado);
     } catch (error) {

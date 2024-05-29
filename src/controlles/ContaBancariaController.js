@@ -18,7 +18,7 @@ class ContaBancariaController {
         try {
             const id = req.params.id;
             const conexao = await new ConexaoMySql().getConexao();
-            const sql = 'SELECT * FROM usuario WHERE id = ?';
+            const sql = 'SELECT * FROM contaBancaria WHERE id = ?';
             const [resultado] = await conexao.execute(sql, [id]);
 
             if (resultado.length === 0) {
@@ -35,9 +35,9 @@ class ContaBancariaController {
 
     async adicionar(req, resp) {
         try {
-            const contaBancariaEditar = req.body;
+            const novaContaBancaria = req.body;
 
-            if (!contaBancariaEditar.nome || isNaN(Number(contaBancariaEditar.agencia)) || isNaN(Number(contaBancariaEditar.conta))) {
+            if (!novaContaBancaria.nome || isNaN(Number(novaContaBancaria.agencia)) || isNaN(Number(novaContaBancaria.conta))) {
 
                 resp.status(400).send('Os campos nome, agencia e conta são obrigatórios.');
                 return;
@@ -46,9 +46,9 @@ class ContaBancariaController {
             const conexao = await new ConexaoMySql().getConexao();
             const sql = 'INSERT INTO contaBancaria (nome, agencia, conta) VALUES (?, ?, ?)';
             const [resultado] = await conexao.execute(sql, [
-                contaBancariaEditar.nome,
-                contaBancariaEditar.agencia,
-                contaBancariaEditar.conta,
+                novaContaBancaria.nome,
+                novaContaBancaria.agencia,
+                novaContaBancaria.conta,
             ]);
 
             resp.send({ resultado });
@@ -60,11 +60,6 @@ class ContaBancariaController {
     async atualizar(req, resp) {
         try {
             const contaBancariaEditar = req.body;
-
-            if (isNaN(Number(contaBancariaEditar.agencia)) || isNaN(Number(contaBancariaEditar.conta))) {
-                resp.status(400).send('Os campos agencia e conta são obrigatórios para atualizar.');
-                return;
-            }
 
             const conexao = await new ConexaoMySql().getConexao();
             const sql = 'UPDATE contaBancaria SET agencia = ?, conta = ? WHERE id = ?';
@@ -80,6 +75,18 @@ class ContaBancariaController {
             resp.status(500).send(error);
         }
     }
+
+    async excluir(req, resp) {
+        try {
+          const conexao = await new ConexaoMySql().getConexao();
+          const sql = 'DELETE FROM contaBancaria WHERE id = ?';
+          const [resultado] = await conexao.execute(sql, [+req.params.id]);
+    
+          resp.send(resultado);
+        } catch (error) {
+          resp.status(500).send(error);
+        }
+      }
 
 }
 

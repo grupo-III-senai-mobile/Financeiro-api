@@ -1,0 +1,27 @@
+//receita e centro custo
+{
+	"nome": "string",
+      "cpf": num,
+    "email": num
+}
+
+// lancamento
+{
+	"lancamentoTipo": "Pagamento",
+    "descricao": "dsjdsiosd",
+    "valor": 14783525,
+    "dataVencimento": "2004-12-03",
+    "receitaId":1,
+    "centroCustoId": 1,
+    "contaBacariaId":1
+}
+
+{
+       "lancamentoTipo": "Pagamento",
+        "descricao": "sdsdsaf",
+        "valor": "1472.00",
+        "dataVencimento": "2010-12-14",
+        "receitaId": 1,
+        "centroCustoId": 1,
+        "contaBacariaId": 1
+}

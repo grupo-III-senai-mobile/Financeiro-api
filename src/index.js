@@ -22,30 +22,34 @@ app.delete('/usuario/:id', usuariosController.excluir);
 const contaBancariaController = new ContaBancariaController;
 
 app.get('/contaBancaria', contaBancariaController.listar);
-app.get('/contaBancaria/:idConta', contaBancariaController.pesquisar);
+app.get('/contaBancaria/:id', contaBancariaController.pesquisar);
 app.post('/contaBancaria', contaBancariaController.adicionar);
 app.put('/contaBancaria', contaBancariaController.atualizar);
+app.delete('/contaBancaria/:id', contaBancariaController.excluir);
 
 const receitaControllerController = new ReceitaController;
 
 app.get('/receita', receitaControllerController.listar);
-app.get('/receita/:idReceita', receitaControllerController.pesquisar);
+app.get('/receita/:id', receitaControllerController.pesquisar);
 app.post('/receita', receitaControllerController.adicionar);
 app.put('/receita', receitaControllerController.atualizar);
+app.delete('/receita/:id', receitaControllerController.excluir);
 
 const centroCustoController = new CentroCustoController;
 
 app.get('/centroCusto', centroCustoController.listar);
-app.get('/centroCusto/:idCentroCusto', centroCustoController.pesquisar);
+app.get('/centroCusto/:id', centroCustoController.pesquisar);
 app.post('/centroCusto', centroCustoController.adicionar);
 app.put('/centroCusto', centroCustoController.atualizar);
+app.delete('/centroCusto/:id', centroCustoController.excluir);
 
 const lancamentoController = new LancamentosController
 
 app.get('/lancamento', lancamentoController.listar);
+app.get('/lancamento/:id', lancamentoController.pesquisar);
 app.post('/lancamento', lancamentoController.adicionar);
 app.put('/lancamento', lancamentoController.atualizar);
-app.delete('/lancamento', lancamentoController.excluir);
+app.delete('/lancamento/:id', lancamentoController.excluir);
 
 
 app.listen(port, () => {

@@ -22,7 +22,7 @@ class CentroCustoController {
             const [resultado] = await conexao.execute(sql, [id]);
 
             if (resultado.length === 0) {
-                resp.status(404).send({ message: 'Centro de custo não encontrada' });
+                resp.status(404).send({ message: 'Centro de custo não encontrado' });
                 return;
             }
 
@@ -87,6 +87,18 @@ class CentroCustoController {
         resp.status(500).send(error);
     }
 }
+
+async excluir(req, resp) {
+    try {
+      const conexao = await new ConexaoMySql().getConexao();
+      const sql = 'DELETE FROM centroCusto WHERE id = ?';
+      const [resultado] = await conexao.execute(sql, [+req.params.id]);
+
+      resp.send(resultado);
+    } catch (error) {
+      resp.status(500).send(error);
+    }
+  }
 
 }
 

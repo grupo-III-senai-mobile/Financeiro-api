@@ -28,7 +28,7 @@ class UsuariosController {
       const [resultado] = await conexao.execute(sql, [id]);
 
       if (resultado.length === 0) {
-        resp.status(404).send({ message: "Conta não encontrada" });
+        resp.status(404).send({ message: "Usuario não encontrado" });
         return;
       }
 
