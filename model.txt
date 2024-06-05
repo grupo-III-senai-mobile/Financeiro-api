@@ -1,11 +1,18 @@
-//receita e centro custo
+//localhost:3000/receita e localhost:3000/centro custo
 {
 	"nome": "string",
       "cpf": num,
     "email": num
 }
 
-// lancamento
+// localhost:3000/contabancaria
+{
+	"nome": "string",
+    "agencia": num,
+    "conta": num
+}
+
+// localhost:3000/lancamento
 {
 	"lancamentoTipo": "Pagamento",
     "descricao": "dsjdsiosd",
@@ -13,15 +20,5 @@
     "dataVencimento": "2004-12-03",
     "receitaId":1,
     "centroCustoId": 1,
-    "contaBacariaId":1
-}
-
-{
-       "lancamentoTipo": "Pagamento",
-        "descricao": "sdsdsaf",
-        "valor": "1472.00",
-        "dataVencimento": "2010-12-14",
-        "receitaId": 1,
-        "centroCustoId": 1,
-        "contaBacariaId": 1
+    "contaBancariaId":1
 }

@@ -53,5 +53,5 @@ app.delete('/lancamento/:id', lancamentoController.excluir);
 
 
 app.listen(port, () => {
-  console.log(`App listening on port ${port}`);
+  console.log(`App rodando na porta ${port}`);
 });
