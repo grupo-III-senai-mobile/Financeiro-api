@@ -1,15 +1,26 @@
+import cors from 'cors';
 import express from 'express';
 import UsuariosController from './controlles/UsuariosController.js';
 import ContaBancariaController from './controlles/ContaBancariaController.js';
 import ReceitaController from './controlles/ReceitaController.js';
 import CentroCustoController from './controlles/CentroCustoController.js';
 import LancamentosController from './controlles/LancamentoController.js';
+import AutenticacaoController from './controlles/AutenticacaoController.js';
 
 
 const port = 3000;
 
 const app = express();
 app.use(express.json());
+app.use(
+  cors({
+    origin: '*',
+  })
+);
+
+const logarcontroller = new AutenticacaoController;
+
+app.post('/logar', logarcontroller.logar);
 
 const usuariosController = new UsuariosController;
 
