@@ -27,7 +27,7 @@ const usuariosController = new UsuariosController;
 app.get('/usuario', usuariosController.listar);
 app.get('/usuario/:id', usuariosController.pesquisar);
 app.post('/usuario', usuariosController.adicionar);
-app.put('/usuario', usuariosController.atualizar);
+app.put('/usuario/:id', usuariosController.atualizar);
 app.delete('/usuario/:id', usuariosController.excluir);
 
 const contaBancariaController = new ContaBancariaController;
@@ -35,7 +35,7 @@ const contaBancariaController = new ContaBancariaController;
 app.get('/contaBancaria', contaBancariaController.listar);
 app.get('/contaBancaria/:id', contaBancariaController.pesquisar);
 app.post('/contaBancaria', contaBancariaController.adicionar);
-app.put('/contaBancaria', contaBancariaController.atualizar);
+app.put('/contaBancaria/:id', contaBancariaController.atualizar);
 app.delete('/contaBancaria/:id', contaBancariaController.excluir);
 
 const receitaControllerController = new ReceitaController;
