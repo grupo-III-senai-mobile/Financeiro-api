@@ -60,13 +60,14 @@ class ContaBancariaController {
     async atualizar(req, resp) {
         try {
             const contaBancariaEditar = req.body;
+            const contaId = +req.params.id;
 
             const conexao = await new ConexaoMySql().getConexao();
             const sql = 'UPDATE contaBancaria SET agencia = ?, conta = ? WHERE id = ?';
             const [resultado] = await conexao.execute(sql, [
                 contaBancariaEditar.agencia,
                 contaBancariaEditar.conta,
-                contaBancariaEditar.id,
+                contaId.id,
             ]);
 
 

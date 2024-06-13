@@ -68,6 +68,7 @@ class ReceitaController {
     async atualizar(req, resp) {
         try {
             const receitaEditar = req.body;
+            const receitaId = +req.params.id;
 
             if (!receitaEditar.nome) {
                 resp.status(400).send('O campo nome deve ser obrigatóriamente atualizado.');
@@ -78,7 +79,7 @@ class ReceitaController {
             const sql = 'UPDATE receita SET nome = ? WHERE id = ?';
             const [resultado] = await conexao.execute(sql, [
                 receitaEditar.nome,
-                receitaEditar.id,
+                receitaId.id,
             ]);
 
 

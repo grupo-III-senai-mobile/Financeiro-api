@@ -82,6 +82,7 @@ class LancamentosController {
   async atualizar(req, resp) {
     try {
       const lancamentoEditar = req.body;
+      const lancamentoId = +req.params.id
 
       if (!lancamentoEditar.id || !lancamentoEditar.descricao || !lancamentoEditar.valor || !lancamentoEditar.data ||
         !lancamentoEditar.centroCustoId || !lancamentoEditar.receitaId || !lancamentoEditar.contaBancariaId) {
@@ -98,7 +99,7 @@ class LancamentosController {
         lancamentoEditar.centroCustoId,
         lancamentoEditar.receitaId,
         lancamentoEditar.contaBancariaId,
-        lancamentoEditar.id
+        lancamentoId.id
       ]);
 
       resp.send({ resultado });

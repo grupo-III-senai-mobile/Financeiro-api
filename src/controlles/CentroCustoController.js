@@ -68,6 +68,7 @@ class CentroCustoController {
     async atualizar(req, resp) {
     try {
         const centroCustoEditar = req.body;
+        const centroId = +req.params.id;
 
         if (!centroCustoEditar.nome) {
             resp.status(400).send('O campo nome deve ser obrigatóriamente atualizado.');
@@ -78,7 +79,7 @@ class CentroCustoController {
         const sql = 'UPDATE centroCusto SET nome = ? WHERE id = ?';
         const [resultado] = await conexao.execute(sql, [
             centroCustoEditar.nome,
-            centroCustoEditar.id,
+            centroId.id,
         ]);
 
 

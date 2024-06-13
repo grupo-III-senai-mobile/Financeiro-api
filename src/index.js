@@ -43,7 +43,7 @@ const receitaControllerController = new ReceitaController;
 app.get('/receita', receitaControllerController.listar);
 app.get('/receita/:id', receitaControllerController.pesquisar);
 app.post('/receita', receitaControllerController.adicionar);
-app.put('/receita', receitaControllerController.atualizar);
+app.put('/receita/:id', receitaControllerController.atualizar);
 app.delete('/receita/:id', receitaControllerController.excluir);
 
 const centroCustoController = new CentroCustoController;
@@ -51,7 +51,7 @@ const centroCustoController = new CentroCustoController;
 app.get('/centroCusto', centroCustoController.listar);
 app.get('/centroCusto/:id', centroCustoController.pesquisar);
 app.post('/centroCusto', centroCustoController.adicionar);
-app.put('/centroCusto', centroCustoController.atualizar);
+app.put('/centroCusto/:id', centroCustoController.atualizar);
 app.delete('/centroCusto/:id', centroCustoController.excluir);
 
 const lancamentoController = new LancamentosController
@@ -59,7 +59,7 @@ const lancamentoController = new LancamentosController
 app.get('/lancamento', lancamentoController.listar);
 app.get('/lancamento/:id', lancamentoController.pesquisar);
 app.post('/lancamento', lancamentoController.adicionar);
-app.put('/lancamento', lancamentoController.atualizar);
+app.put('/lancamento/:id', lancamentoController.atualizar);
 app.delete('/lancamento/:id', lancamentoController.excluir);
 
 
