@@ -9,7 +9,7 @@ class AutenticacaoController {
       }
 
       const conexao = await new ConexaoMySql().getConexao();
-      const sql = 'SELECT * FROM usuario u WHERE email = ? AND senha = md5(?)';
+      const sql = 'SELECT * FROM usuario u WHERE email = ? AND senha = ?';
       const [resultado] = await conexao.execute(sql, [req.body.email, req.body.senha]);
 
       const usuarioEncontradoNoBancoDeDados = resultado[0];

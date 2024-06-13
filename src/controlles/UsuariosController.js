@@ -64,9 +64,9 @@ class UsuariosController {
 
       const conexao = await new ConexaoMySql().getConexao();
       const sql =
-        "INSERT INTO usuario (nome, email, senha, cpf, dtNascimento, estado, cidade, bairro, rua, numero) VALUES (?, ?, md5(?), ?, ?, ?, ?, ?, ?, ?)";
+        "INSERT INTO usuario (nome, email, senha, cpf, dtNascimento, estado, cidade, bairro, rua, numero) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
       const [resultado] = await conexao.execute(sql, [
-        novoUsuario.nome,
+        novoUsuario.nome, 
         novoUsuario.email,
         novoUsuario.senha,
         novoUsuario.cpf,
@@ -85,45 +85,64 @@ class UsuariosController {
   }
 
   async atualizar(req, resp) {
+    const usuarioEditar = req.body;
+    const usuarioId = +req.params.id;
+  
+    if (
+      !usuarioEditar.nome ||
+      !usuarioEditar.email ||
+      !usuarioEditar.estado ||
+      !usuarioEditar.cidade ||
+      !usuarioEditar.bairro ||
+      !usuarioEditar.rua ||
+      isNaN(Number(usuarioEditar.numero))
+    ) {
+      resp.status(400).send("Os campos nome, email, senha, estado, cidade, bairro, rua e número são obrigatórios para atualizar.");
+      return;
+    }
+  
+    let conexao;
     try {
-      const usuarioEditar = req.body;
-
-      if (
-        !usuarioEditar.nome ||
-        !usuarioEditar.email ||
-        !usuarioEditar.senha ||
-        !usuarioEditar.estado ||
-        !usuarioEditar.cidade ||
-        !usuarioEditar.bairro ||
-        !usuarioEditar.rua ||
-        isNaN(Number(usuarioEditar.numero))
-      ) {
-        resp
-          .status(400)
-          .send("Os campos nome e email são obrigatórios para atualizar.");
-        return;
-      }
-
-      const conexao = await new ConexaoMySql().getConexao();
-      const sql =
-        "UPDATE usuario SET nome = ?, email = ?, senha = ?, estado = ?, cidade = ?, bairro = ?, rua = ?, numero = ? WHERE id = ?";
+      conexao = await new ConexaoMySql().getConexao();
+  
+      const sql = `
+        UPDATE usuario 
+        SET nome = ?, email = ?, estado = ?, cidade = ?, bairro = ?, rua = ?, numero = ? 
+        WHERE id = ?`;
+    
       const [resultado] = await conexao.execute(sql, [
         usuarioEditar.nome,
         usuarioEditar.email,
-        usuarioEditar.senha,
         usuarioEditar.estado,
         usuarioEditar.cidade,
         usuarioEditar.bairro,
         usuarioEditar.rua,
         usuarioEditar.numero,
-        usuarioEditar.id,
+        usuarioId
       ]);
-
-      resp.send({ resultado });
+  
+      if (resultado.affectedRows > 0) {
+        resp.status(200).send("Usuário atualizado com sucesso.");
+      } else {
+        resp.status(404).send("Usuário não encontrado.");
+      }
     } catch (error) {
-      resp.status(500).send(error);
+      console.error("Erro ao atualizar o usuário:", error);
+      resp.status(500).send("Erro ao atualizar o usuário.");
+    } finally {
+      if (conexao) {
+        try {
+          await conexao.end();
+        } catch (error) {
+          console.error("Erro ao fechar a conexão com o banco de dados:", error);
+        }
+      }
     }
   }
+  
+  
+  
+
 
   async excluir(req, resp) {
     try {
