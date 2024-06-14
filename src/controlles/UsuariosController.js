@@ -87,7 +87,7 @@ class UsuariosController {
   async atualizar(req, resp) {
     const usuarioEditar = req.body;
     const usuarioId = +req.params.id;
-  
+
     if (
       !usuarioEditar.nome ||
       !usuarioEditar.email ||
@@ -100,16 +100,20 @@ class UsuariosController {
       resp.status(400).send("Os campos nome, email, senha, estado, cidade, bairro, rua e número são obrigatórios para atualizar.");
       return;
     }
-  
+
     let conexao;
     try {
+      // Obtém uma conexão do pool
       conexao = await new ConexaoMySql().getConexao();
-  
+
+      // Inicia a transação
+      await conexao.beginTransaction();
+
       const sql = `
         UPDATE usuario 
         SET nome = ?, email = ?, estado = ?, cidade = ?, bairro = ?, rua = ?, numero = ? 
         WHERE id = ?`;
-    
+
       const [resultado] = await conexao.execute(sql, [
         usuarioEditar.nome,
         usuarioEditar.email,
@@ -120,21 +124,29 @@ class UsuariosController {
         usuarioEditar.numero,
         usuarioId
       ]);
-  
+
+      // Confirma a transação se houve sucesso
+      await conexao.commit();
+
       if (resultado.affectedRows > 0) {
         resp.status(200).send("Usuário atualizado com sucesso.");
       } else {
         resp.status(404).send("Usuário não encontrado.");
       }
     } catch (error) {
+      // Em caso de erro, faz rollback da transação para evitar inconsistências
+      if (conexao) {
+        await conexao.rollback();
+      }
       console.error("Erro ao atualizar o usuário:", error);
       resp.status(500).send("Erro ao atualizar o usuário.");
     } finally {
+      // Fecha a conexão ao finalizar
       if (conexao) {
         try {
-          await conexao.end();
+          await conexao.release();
         } catch (error) {
-          console.error("Erro ao fechar a conexão com o banco de dados:", error);
+          console.error("Erro ao liberar a conexão com o banco de dados:", error);
         }
       }
     }

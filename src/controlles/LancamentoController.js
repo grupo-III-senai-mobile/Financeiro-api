@@ -5,19 +5,23 @@ class LancamentosController {
     try {
       const conexao = await new ConexaoMySql().getConexao();
       const sql = `
-      SELECT l.*, cc.nome as cc_nome, cc.cpf as cc_cpf, cc.email as cc_email, r.nome as r_nome, r.cpf as r_cpf, r.email as r_email, cb.nome as cb_nome, cb.conta as cb_conta, cb.agencia as cb_agencia 
-      FROM lancamento l
-      JOIN centroCusto cc ON l.centroCustoId = cc.id
-      JOIN receita r ON l.receitaId = r.id
-      JOIN contaBancaria cb ON l.contaBancariaId = cb.id
+        SELECT l.*, 
+               cc.nome as cc_nome, cc.cpf as cc_cpf, cc.email as cc_email, 
+               r.nome as r_nome, r.cpf as r_cpf, r.email as r_email, 
+               cb.nome as cb_nome, cb.conta as cb_conta, cb.agencia as cb_agencia 
+        FROM lancamento l
+        LEFT JOIN centroCusto cc ON l.centroCustoId = cc.id
+        LEFT JOIN receita r ON l.receitaId = r.id
+        JOIN contaBancaria cb ON l.contaBancariaId = cb.id
       `;
       const [resultado] = await conexao.execute(sql);
-
+  
       resp.send(resultado);
     } catch (error) {
       resp.status(500).send(error);
     }
   }
+  
 
   async pesquisar(req, resp) {
     try {
@@ -48,18 +52,30 @@ class LancamentosController {
     try {
       const novoLancamento = req.body;
       const date = new Date();
-
-      if (!novoLancamento.lancamentoTipo || !novoLancamento.descricao || isNaN(Number(novoLancamento.valor)) || !novoLancamento.dataVencimento ||
-        isNaN(Number(novoLancamento.centroCustoId)) || isNaN(Number(novoLancamento.receitaId)) || isNaN(Number(novoLancamento.contaBancariaId))) {
-        resp.status(400).send('Os campos lancamentoTipo, descricao, valor, data, centroCustoId, receitaId e contaBancariaId são obrigatórios.');
+  
+      // Validação básica dos campos obrigatórios
+      if (!novoLancamento.lancamentoTipo || !novoLancamento.descricao || isNaN(Number(novoLancamento.valor)) || !novoLancamento.dataVencimento || !novoLancamento.contaBancariaId) {
+        resp.status(400).send('Os campos lancamentoTipo, descricao, valor, dataVencimento e contaBancariaId são obrigatórios.');
         return;
       }
-
+  
+      // Validação do tipo de lançamento
       if (novoLancamento.lancamentoTipo !== "Pagamento" && novoLancamento.lancamentoTipo !== "Recebimento") {
         resp.status(400).send('O campo lancamentoTipo só aceita (Pagamento ou Recebimento).');
         return;
       }
-
+  
+      // Validação condicional para receitaId e centroCustoId
+      if (novoLancamento.lancamentoTipo === "Pagamento" && !novoLancamento.centroCustoId) {
+        resp.status(400).send('O campo centroCustoId é obrigatório para lançamentos do tipo Pagamento.');
+        return;
+      }
+  
+      if (novoLancamento.lancamentoTipo === "Recebimento" && !novoLancamento.receitaId) {
+        resp.status(400).send('O campo receitaId é obrigatório para lançamentos do tipo Recebimento.');
+        return;
+      }
+  
       const conexao = await new ConexaoMySql().getConexao();
       const sql = 'INSERT INTO lancamento (lancamentoTipo, descricao, valor, dataVencimento, receitaId, centroCustoId, contaBancariaId) VALUES (?, ?, ?, ?, ?, ?, ?)';
       const [resultado] = await conexao.execute(sql, [
@@ -67,16 +83,17 @@ class LancamentosController {
         novoLancamento.descricao,
         novoLancamento.valor,
         novoLancamento.dataVencimento,
-        novoLancamento.receitaId,
-        novoLancamento.centroCustoId,
+        novoLancamento.lancamentoTipo === 'Recebimento' ? novoLancamento.receitaId : null,
+        novoLancamento.lancamentoTipo === 'Pagamento' ? novoLancamento.centroCustoId : null,
         novoLancamento.contaBancariaId
       ]);
-
+  
       resp.send({ resultado });
     } catch (error) {
       resp.status(500).send(error);
     }
   }
+  
 
 
   async atualizar(req, resp) {
